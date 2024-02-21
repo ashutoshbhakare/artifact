@@ -1,0 +1,23 @@
+wget https://rpmfind.net/linux/fedora/linux/development/rawhide/Everything/aarch64/os/Packages/n/nano-7.2-6.fc40.aarch64.rpm
+
+gcloud artifacts yum upload unnatirepo  --source=nano-7.2-6.fc40.aarch64.rpm --location=us-central
+
+gcloud compute instances create quickstart-yum-vm     --image-family=centos-7     --image-project=centos-cloud     --scopes=cloud-platform
+
+Inside instance 
+sudo yum makecache
+
+sudo yum install yum-plugin-artifact-registry 
+
+
+sudo tee -a /etc/yum.repos.d/artifact-registry.repo << EOF
+[yum-quickstart]
+name=My Repository
+baseurl=https://us-central1-yum.pkg.dev/projects/PROJECT/quickstart-yum-repo
+enabled=0
+repo_gpgcheck=0
+gpgcheck=0
+EOF
+
+
+sudo yum --enablerepo=yum-quickstart install nano
